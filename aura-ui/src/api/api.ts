@@ -151,6 +151,43 @@ export const api = {
     return response.json();
   },
 
+  async getCalendarEvents() {
+    const response = await fetch(`${API_BASE_URL}/calendar/events`, {
+      method: "GET",
+      headers: await authHeaders(false),
+    });
+    if (!response.ok) throw new Error(await response.text());
+    return response.json();
+  },
+  async addCalendarEvent(data: any) {
+    const response = await fetch(`${API_BASE_URL}/calendar/add-event`, {
+      method: "POST",
+      headers: await authHeaders(),
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(await response.text());
+    return response.json();
+  },
+
+  async updatePreferences(data: any) {
+    const response = await fetch(`${API_BASE_URL}/settings/preferences`, {
+      method: "POST",
+      headers: await authHeaders(),
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(await response.text());
+    return response.json();
+  },
+  async updateNotificationPreferences(data: any) {
+    const response = await fetch(`${API_BASE_URL}/settings/notificationPreferences`, {
+      method: "POST",
+      headers: await authHeaders(),
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(await response.text());
+    return response.json();
+  },
+
   /**
    * wipe the local authentication token to terminate the session.
    */

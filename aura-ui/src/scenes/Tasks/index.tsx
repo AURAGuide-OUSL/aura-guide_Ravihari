@@ -40,6 +40,7 @@ export function TasksScreen({ onNavigateCalendar }: { onNavigateCalendar: () => 
   const [listTab, setListTab] = useState("Today");
   const [tasks, setTasks] = useState<any[]>([]);
   const [newTask, setNewTask] = useState("");
+  const safeDate = (value: any) => (typeof value === "string" ? value : "");
 
   const loadTasks = async () => {
     try {
@@ -47,10 +48,10 @@ export function TasksScreen({ onNavigateCalendar }: { onNavigateCalendar: () => 
       if (!data?.length) {
         await api.generateTaskPlan();
         const generated = await api.getTasks();
-        setTasks(generated);
+        setTasks(Array.isArray(generated) ? generated : []);
         return;
       }
-      setTasks(data);
+      setTasks(Array.isArray(data) ? data : []);
     } catch (error) {
       Alert.alert("Task loading failed", (error as Error).message);
     }
@@ -61,8 +62,8 @@ export function TasksScreen({ onNavigateCalendar }: { onNavigateCalendar: () => 
   }, []);
 
   const today = new Date().toISOString().slice(0, 10);
-  const todayTasks = tasks.filter((task) => (task.start_date_time || "").slice(0, 10) <= today && (task.status || "").toLowerCase() !== "completed");
-  const upcomingTasks = tasks.filter((task) => (task.start_date_time || "").slice(0, 10) > today && (task.status || "").toLowerCase() !== "completed");
+  const todayTasks = tasks.filter((task) => safeDate(task.start_date_time).slice(0, 10) <= today && (task.status || "").toLowerCase() !== "completed");
+  const upcomingTasks = tasks.filter((task) => safeDate(task.start_date_time).slice(0, 10) > today && (task.status || "").toLowerCase() !== "completed");
   const completed = tasks.filter((task) => (task.status || "").toLowerCase() === "completed");
 
   const addTask = async () => {
@@ -116,7 +117,9 @@ export function TasksScreen({ onNavigateCalendar }: { onNavigateCalendar: () => 
 
                   <View style={commonStyles.progressSummaryRow}>
                     <Text style={commonStyles.helperText}>{task.status}</Text>
-                    <Text style={commonStyles.helperText}>{(task.end_date_time || task.start_date_time || "").slice(0, 10)}</Text>
+                    <Text style={commonStyles.helperText}>
+                      {(safeDate(task.end_date_time) || safeDate(task.start_date_time)).slice(0, 10)}
+                    </Text>
                   </View>
                   <ProgressBar value={task.status === "completed" ? 100 : task.status === "in_progress" ? 60 : 15} />
                   <View style={styles.inlineActions}>
@@ -143,7 +146,7 @@ export function TasksScreen({ onNavigateCalendar }: { onNavigateCalendar: () => 
                   {column.items.map((task) => (
                     <AppCard key={task.id} style={styles.boardCard}>
                       <Text style={commonStyles.cardTitle}>{task.task}</Text>
-                      <Text style={commonStyles.cardBody}>{(task.start_date_time || "").slice(0, 10)}</Text>
+                      <Text style={commonStyles.cardBody}>{safeDate(task.start_date_time).slice(0, 10)}</Text>
                       <View style={styles.inlineActions}>
                         <PrimaryButton label="Todo" onPress={() => moveTask(task, "pending")} secondary />
                         <PrimaryButton label="In progress" onPress={() => moveTask(task, "in_progress")} secondary />

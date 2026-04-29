@@ -43,10 +43,32 @@ func main() {
 	r := chi.NewRouter()
 
 	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
+	originSet := map[string]bool{}
+	for _, origin := range strings.Split(allowedOrigins, ",") {
+		o := strings.TrimSpace(origin)
+		if o != "" {
+			originSet[o] = true
+		}
+	}
+
+	// Safe local defaults for web/mobile dev if ALLOWED_ORIGINS is unset.
+	if len(originSet) == 0 {
+		originSet["http://localhost:8081"] = true
+		originSet["http://localhost:8082"] = true
+		originSet["http://127.0.0.1:8081"] = true
+		originSet["http://127.0.0.1:8082"] = true
+	}
+
 	c := cors.New(cors.Options{
-		AllowedOrigins:   strings.Split(allowedOrigins, ","),
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		AllowOriginFunc: func(origin string) bool {
+			if originSet[origin] {
+				return true
+			}
+			// Allow any localhost/127.0.0.1 port in dev.
+			return strings.HasPrefix(origin, "http://localhost:") || strings.HasPrefix(origin, "http://127.0.0.1:")
+		},
 		AllowCredentials: true,
 		MaxAge:           300,
 	})

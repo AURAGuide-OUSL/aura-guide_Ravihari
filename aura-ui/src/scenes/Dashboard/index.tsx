@@ -57,9 +57,13 @@ export function DashboardScreen({
   onSignOut: () => void;
 }) {
   const [tasks, setTasks] = useState<any[]>([]);
+  const safeDate = (value: any) => (typeof value === "string" ? value : "");
 
   useEffect(() => {
-    api.getTasks().then(setTasks).catch(() => undefined);
+    api
+      .getTasks()
+      .then((data) => setTasks(Array.isArray(data) ? data : []))
+      .catch(() => setTasks([]));
   }, []);
 
   return (
@@ -190,7 +194,9 @@ export function DashboardScreen({
 
               <View style={commonStyles.progressSummaryRow}>
                 <Text style={commonStyles.helperText}>{task.status}</Text>
-                <Text style={commonStyles.helperText}>{(task.end_date_time || task.start_date_time || "").slice(0, 10)}</Text>
+                <Text style={commonStyles.helperText}>
+                  {(safeDate(task.end_date_time) || safeDate(task.start_date_time)).slice(0, 10)}
+                </Text>
               </View>
               <ProgressBar value={task.status === "completed" ? 100 : task.status === "in_progress" ? 60 : 15} />
             </AppCard>

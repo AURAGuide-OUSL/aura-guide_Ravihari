@@ -66,13 +66,12 @@ export function OnboardingScreen({
           </View>
         ) : (
           <View style={commonStyles.stackMd}>
-            <PickerField label="University" selectedValue={university} onValueChange={(itemValue) => setUniversity(itemValue)}>
-              <Picker.Item label="Select University" value="" />
-              <Picker.Item label="Open University of Sri Lanka" value="Open University of Sri Lanka" />
-              <Picker.Item label="University of Colombo" value="University of Colombo" />
-              <Picker.Item label="University of Moratuwa" value="University of Moratuwa" />
-              <Picker.Item label="SLIIT" value="SLIIT" />
-            </PickerField>
+            <InputField
+              label="University"
+              placeholder="Type your university"
+              value={university}
+              onChangeText={setUniversity}
+            />
             <PickerField
               label="Degree Program"
               selectedValue={degreeProgram}

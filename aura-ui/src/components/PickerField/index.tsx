@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { palette } from "../../theme";
 
@@ -21,7 +21,17 @@ export function PickerField({
         <Picker
           selectedValue={selectedValue}
           onValueChange={onValueChange}
-          style={styles.picker}
+          style={[
+            styles.picker,
+            Platform.OS === "web"
+              ? ({
+                  appearance: "none",
+                  WebkitAppearance: "none",
+                  MozAppearance: "none",
+                  outlineWidth: 0,
+                } as any)
+              : null,
+          ]}
           dropdownIconColor={palette.primary}
         >
           {children}
@@ -49,7 +59,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   picker: {
-    marginHorizontal: 4,
+    marginHorizontal: 8,
     color: palette.text,
+    backgroundColor: "transparent",
+    borderWidth: 0,
+    ...(Platform.OS === "web" ? ({ paddingRight: 28 } as any) : {}),
   },
 });

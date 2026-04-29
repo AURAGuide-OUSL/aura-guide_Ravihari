@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 
 export const palette = {
   background: "#F3F7FC",
@@ -21,13 +21,18 @@ export const palette = {
 };
 
 export const cardShadow = StyleSheet.create({
-  shadow: {
-    shadowColor: "#1E3A8A",
-    shadowOpacity: 0.12,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 4,
-  },
+  shadow:
+    Platform.OS === "web"
+      ? ({
+          boxShadow: "0px 8px 14px rgba(30, 58, 138, 0.12)",
+        } as any)
+      : {
+          shadowColor: "#1E3A8A",
+          shadowOpacity: 0.12,
+          shadowRadius: 14,
+          shadowOffset: { width: 0, height: 8 },
+          elevation: 4,
+        },
 });
 
 export const commonStyles = StyleSheet.create({
